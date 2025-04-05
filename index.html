@@ -1,18 +1,33 @@
-
+### HTML (index.html)
+```html
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-    <meta charset="UTF-8">
-    <title>Kalorikoll</title>
+  <meta charset="UTF-8" />
+  <title>Kalorikoll</title>
+  <script src="script.js" defer></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="container">
     <h1>Kalorikoll</h1>
-    <form id="food-form">
-        <input type="number" id="amount" placeholder="Antal" required>
-        <input type="text" id="food" placeholder="Livsmedel" required>
-        <button type="submit">Lägg till</button>
-    </form>
-    <div id="result"></div>
-    <script src="app.js"></script>
+    <h2 id="currentDate"></h2>
+    <input type="number" id="quantityInput" placeholder="Antal" min="1" />
+    <select id="unitSelect">
+      <option value="gram">gram</option>
+      <option value="dl">dl</option>
+      <option value="kilo">kilo</option>
+    </select>
+    <input type="text" id="foodInput" placeholder="Måltid (ex: ägg)" />
+    <button onclick="addMeal()">Lägg till måltid</button>
+    <div class="summary">
+      <h2>Dagligt intag: <span id="dailyCalories">0</span> kcal | <span id="dailyProtein">0</span> g protein</h2>
+    </div>
+    <h3>Tidigare intag:</h3>
+    <ul id="mealList"></ul>
+    <button onclick="resetCalories()">Nollställ dag</button>
+    <button onclick="removeLastDay()">Ta bort senaste dag</button>
+  </div>
 </body>
 </html>
+```
