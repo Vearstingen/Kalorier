@@ -1,4 +1,4 @@
-```javascript
+javascript
 const mealData = {
   "ägg": { calories: 80, protein: 7 },
   "banan": { calories: 90, protein: 1 },
