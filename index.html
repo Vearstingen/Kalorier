@@ -10,7 +10,8 @@
 <body>
   <div class="container">
     <h1>Kalorikoll</h1>
-    <input type="text" id="foodInput" placeholder="Måltid (ex: lasagne)" />
+    <input type="number" id="quantityInput" placeholder="Antal (ex: 5)" min="1" />
+    <input type="text" id="foodInput" placeholder="Måltid (ex: ägg)" />
     <button onclick="addMeal()">Lägg till måltid</button>
     <div class="summary">
       <h2>Dagligt intag: <span id="dailyCalories">0</span> kcal</h2>
