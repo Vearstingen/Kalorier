@@ -2,24 +2,17 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8" />
-  <title>Kalorikoll</title>
-  <script src="script.js" defer></script>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Kalorikoll</title>
 </head>
 <body>
-  <div class="container">
     <h1>Kalorikoll</h1>
-    <input type="number" id="quantityInput" placeholder="Antal (ex: 5)" min="1" />
-    <input type="text" id="foodInput" placeholder="Måltid (ex: ägg)" />
-    <button onclick="addMeal()">Lägg till måltid</button>
-    <div class="summary">
-      <h2>Dagligt intag: <span id="dailyCalories">0</span> kcal</h2>
-      <h2>Veckovis intag: <span id="weeklyCalories">0</span> kcal</h2>
-      <h2>Månadsvis intag: <span id="monthlyCalories">0</span> kcal</h2>
-    </div>
-    <button onclick="resetCalories()">Nollställ dag</button>
-    <ul id="mealList"></ul>
-  </div>
+    <form id="food-form">
+        <input type="number" id="amount" placeholder="Antal" required>
+        <input type="text" id="food" placeholder="Livsmedel" required>
+        <button type="submit">Lägg till</button>
+    </form>
+    <div id="result"></div>
+    <script src="app.js"></script>
 </body>
 </html>
