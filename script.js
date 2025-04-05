@@ -1,96 +1,84 @@
-javascript
-const mealData = {
-  "ägg": { calories: 80, protein: 7 },
-  "banan": { calories: 90, protein: 1 },
-  // Lägg till fler livsmedel här
+const foodDatabase = {
+    "ägg": { calories: 77, protein: 6 },
+    "havregryn": { calories: 389, protein: 17 },
+    "kvarg": { calories: 60, protein: 10 },
+    "äpple": { calories: 52, protein: 0.3 },
+    "kyckling": { calories: 165, protein: 31 },
+    "banan": { calories: 89, protein: 1.1 },
+    "lasagne": { calories: 135, protein: 7 },
+    "mjölk": { calories: 42, protein: 3.4 }
 };
 
-let dailyTotalCalories = 0;
-let dailyTotalProtein = 0;
-const dailyIntakeHistory = [];
+let totalCalories = 0;
+let totalProtein = 0;
 
-document.getElementById('currentDate').innerText = new Date().toLocaleDateString('sv-SE');
+const todayDate = new Date().toLocaleDateString();
+document.getElementById('todayDate').textContent = todayDate;
 
-async function addMeal() {
-  const quantity = parseInt(document.getElementById('quantityInput').value);
-  const unit = document.getElementById('unitSelect').value;
-  const input = document.getElementById('foodInput').value.trim().toLowerCase();
+document.getElementById('entryForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const quantity = parseFloat(document.getElementById('quantity').value);
+    const unit = document.getElementById('unit').value;
+    const food = document.getElementById('food').value.toLowerCase();
 
-  if (isNaN(quantity) || quantity <= 0) {
-    alert("Ange ett giltigt antal!");
-    return;
-  }
+    if (foodDatabase[food]) {
+        let calorieValue = foodDatabase[food].calories;
+        let proteinValue = foodDatabase[food].protein;
 
-  let caloriesPerUnit, proteinPerUnit;
+        let factor = 1;
+        if (unit === "g") factor = 0.01;
+        if (unit === "ml") factor = 0.001;
+        if (unit === "dl") factor = 0.1;
 
-  if (mealData[input]) {
-    caloriesPerUnit = mealData[input].calories;
-    proteinPerUnit = mealData[input].protein;
-  } else {
-    const { calories, protein } = await fetchCaloriesAndProtein(input);
-    caloriesPerUnit = calories;
-    proteinPerUnit = protein;
-  }
+        totalCalories += calorieValue * quantity * factor;
+        totalProtein += proteinValue * quantity * factor;
 
-  // Konvertera till gram baserat på enhet
-  let totalQuantityInGrams = quantity;
-  if (unit === 'dl') totalQuantityInGrams *= 100; // Anta att 1 dl är 100 gram
-  else if (unit === 'kilo') totalQuantityInGrams *= 1000; // Kilo till gram
+        updateSummary();
+    } else {
+        alert("Maten finns inte i databasen.");
+    }
 
-  const totalCalories = (totalQuantityInGrams * caloriesPerUnit) / 100;
-  const totalProtein = (totalQuantityInGrams * proteinPerUnit) / 100;
+    document.getElementById('entryForm').reset();
+});
 
-  dailyTotalCalories += totalCalories;
-  dailyTotalProtein += totalProtein;
-
-  updateDisplay();
-
-  const mealList = document.getElementById('mealList');
-  const listItem = document.createElement('li');
-  listItem.textContent = `${quantity} ${unit} ${input} = ${totalCalories.toFixed(2)} kcal, ${totalProtein.toFixed(2)} g protein`;
-  mealList.appendChild(listItem);
-
-  dailyIntakeHistory.push({ date: new Date().toLocaleDateString('sv-SE'), calories: totalCalories, protein: totalProtein });
-
-  document.getElementById('quantityInput').value = "";
-  document.getElementById('foodInput').value = "";
+function updateSummary() {
+    document.getElementById('totalCalories').textContent = totalCalories.toFixed(2);
+    document.getElementById('totalProtein').textContent = totalProtein.toFixed(2);
 }
 
-function updateDisplay() {
-  document.getElementById('dailyCalories').textContent = dailyTotalCalories.toFixed(2);
-  document.getElementById('dailyProtein').textContent = dailyTotalProtein.toFixed(2);
-}
-
-function resetCalories() {
-  dailyTotalCalories = 0;
-  dailyTotalProtein = 0;
-  document.getElementById('mealList').innerHTML = "";
-  dailyIntakeHistory.length = 0; // Tömma historiken
-  updateDisplay();
-  alert("Dagens kalorier och protein har nollställts!");
-}
-
-function removeLastDay() {
-  if (dailyIntakeHistory.length > 0) {
-    const lastEntry = dailyIntakeHistory.pop();
-    dailyTotalCalories -= lastEntry.calories;
-    dailyTotalProtein -= lastEntry.protein;
-    updateDisplay();
-    alert(`Tagit bort intag från ${lastEntry.date}.`);
-    // Uppdatera listan
-    const mealList = document.getElementById('mealList');
-    mealList.innerHTML = ""; // Rensa listan och återställa den
-    dailyIntakeHistory.forEach(entry => {
-      const listItem = document.createElement('li');
-      listItem.textContent = `${entry.date}: ${entry.calories.toFixed(2)} kcal, ${entry.protein.toFixed(2)} g protein`;
-      mealList.appendChild(listItem);
+document.getElementById('saveDay').addEventListener('click', function() {
+    const history = JSON.parse(localStorage.getItem('history')) || [];
+    history.push({
+        date: todayDate,
+        calories: totalCalories.toFixed(2),
+        protein: totalProtein.toFixed(2)
     });
-  } else {
-    alert("Ingen historik att ta bort.");
-  }
+    localStorage.setItem('history', JSON.stringify(history));
+    renderHistory();
+});
+
+document.getElementById('resetDay').addEventListener('click', function() {
+    totalCalories = 0;
+    totalProtein = 0;
+    updateSummary();
+});
+
+function renderHistory() {
+    const history = JSON.parse(localStorage.getItem('history')) || [];
+    const historyList = document.getElementById('history');
+    historyList.innerHTML = '';
+    history.forEach((entry, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${entry.date}: ${entry.calories} kcal, ${entry.protein} g protein`;
+        li.addEventListener('click', () => {
+            if (confirm('Vill du ta bort denna post?')) {
+                history.splice(index, 1);
+                localStorage.setItem('history', JSON.stringify(history));
+                renderHistory();
+            }
+        });
+        historyList.appendChild(li);
+    });
 }
 
-async function fetchCaloriesAndProtein(food) {
-  try {
-    const response = await fetch('https://world.openfoodfacts.org/api/v0/product/' + food + '.json');
-    if (!response.ok) throw new Error('Nätverksfel');
+renderHistory();
