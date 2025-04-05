@@ -1,0 +1,24 @@
+
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kalorikoll</title>
+  <script src="script.js" defer></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Kalorikoll</h1>
+    <input type="text" id="foodInput" placeholder="Måltid (ex: lasagne)" />
+    <button onclick="addMeal()">Lägg till måltid</button>
+    <div class="summary">
+      <h2>Dagligt intag: <span id="dailyCalories">0</span> kcal</h2>
+      <h2>Veckovis intag: <span id="weeklyCalories">0</span> kcal</h2>
+      <h2>Månadsvis intag: <span id="monthlyCalories">0</span> kcal</h2>
+    </div>
+    <button onclick="resetCalories()">Nollställ dag</button>
+    <ul id="mealList"></ul>
+  </div>
+</body>
+</html>
